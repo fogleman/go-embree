@@ -27,21 +27,19 @@ void init() {
     device = rtcNewDevice(NULL);
 }
 
-void *createMesh(int numTriangles, float *data) {
+void *createMesh(int numTriangles, int numPoints, float *points, int *indexes) {
     RTCScene scene = rtcDeviceNewScene(device, RTC_SCENE_STATIC, RTC_INTERSECT1);
-    unsigned geomID = rtcNewTriangleMesh(scene, RTC_GEOMETRY_STATIC, numTriangles, numTriangles * 3, 1);
+    unsigned geomID = rtcNewTriangleMesh(scene, RTC_GEOMETRY_STATIC, numTriangles, numPoints, 1);
 
     Vertex *vertices = (Vertex *)rtcMapBuffer(scene, geomID, RTC_VERTEX_BUFFER);
-    for (int i = 0; i < numTriangles; i++) {
-        vertices[i*3+0] = Vertex{data[i*9+0], data[i*9+1], data[i*9+2]};
-        vertices[i*3+1] = Vertex{data[i*9+3], data[i*9+4], data[i*9+5]};
-        vertices[i*3+2] = Vertex{data[i*9+6], data[i*9+7], data[i*9+8]};
+    for (int i = 0; i < numPoints; i++) {
+        vertices[i] = Vertex{points[i*3+0], points[i*3+1], points[i*3+2]};
     }
     rtcUnmapBuffer(scene, geomID, RTC_VERTEX_BUFFER);
 
     Triangle *triangles = (Triangle *)rtcMapBuffer(scene, geomID, RTC_INDEX_BUFFER);
     for (int i = 0; i < numTriangles; i++) {
-        triangles[i] = Triangle{i*3+0, i*3+1, i*3+2};
+        triangles[i] = Triangle{indexes[i*3+0], indexes[i*3+1], indexes[i*3+2]};
     }
     rtcUnmapBuffer(scene, geomID, RTC_INDEX_BUFFER);
 

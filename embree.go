@@ -31,21 +31,45 @@ type Hit struct {
 	Index int
 }
 
-func NewMesh(triangles []Triangle) *Mesh {
-	n := len(triangles)
-	data := make([]C.float, n*3*3)
-	for i, t := range triangles {
-		data[i*9+0] = C.float(t.A.X)
-		data[i*9+1] = C.float(t.A.Y)
-		data[i*9+2] = C.float(t.A.Z)
-		data[i*9+3] = C.float(t.B.X)
-		data[i*9+4] = C.float(t.B.Y)
-		data[i*9+5] = C.float(t.B.Z)
-		data[i*9+6] = C.float(t.C.X)
-		data[i*9+7] = C.float(t.C.Y)
-		data[i*9+8] = C.float(t.C.Z)
+func index(triangles []Triangle) ([]Vector, []int) {
+	lookup := make(map[Vector]int)
+	var points []Vector
+	for _, t := range triangles {
+		if _, ok := lookup[t.A]; !ok {
+			lookup[t.A] = len(points)
+			points = append(points, t.A)
+		}
+		if _, ok := lookup[t.B]; !ok {
+			lookup[t.B] = len(points)
+			points = append(points, t.B)
+		}
+		if _, ok := lookup[t.C]; !ok {
+			lookup[t.C] = len(points)
+			points = append(points, t.C)
+		}
 	}
-	return &Mesh{C.createMesh(C.int(n), &data[0])}
+	indexes := make([]int, len(triangles)*3)
+	for i, t := range triangles {
+		indexes[i*3+0] = lookup[t.A]
+		indexes[i*3+1] = lookup[t.B]
+		indexes[i*3+2] = lookup[t.C]
+	}
+	return points, indexes
+}
+
+func NewMesh(triangles []Triangle) *Mesh {
+	points, indexes := index(triangles)
+	cpoints := make([]C.float, len(points)*3)
+	for i, p := range points {
+		cpoints[i*3+0] = C.float(p.X)
+		cpoints[i*3+1] = C.float(p.Y)
+		cpoints[i*3+2] = C.float(p.Z)
+	}
+	cindexes := make([]C.int, len(indexes))
+	for i, x := range indexes {
+		cindexes[i] = C.int(x)
+	}
+	return &Mesh{C.createMesh(C.int(len(triangles)), C.int(len(points)), &cpoints[0], &cindexes[0])}
 }
 
 func (m *Mesh) Intersect(ray Ray) Hit {
