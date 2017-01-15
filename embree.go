@@ -1,7 +1,7 @@
 package embree
 
-// #cgo CXXFLAGS: -D__forceinline=inline -DTASKING_TBB -D__TARGET_AVX2__ -D__TARGET_AVX__ -D__TARGET_SSE42__ -fPIC -std=c++11 -fno-strict-aliasing -Wno-narrowing -Wno-deprecated-register -fvisibility-inlines-hidden -fvisibility=hidden -mmacosx-version-min=10.7 -stdlib=libc++ -DNDEBUG -O3 -mavx
-// #cgo LDFLAGS: -lembree
+// #cgo CXXFLAGS: -D__forceinline=inline -DTASKING_TBB -D__TARGET_AVX2__ -D__TARGET_AVX__ -D__TARGET_SSE42__ -fPIC -std=c++11 -fno-strict-aliasing -Wno-narrowing -Wno-deprecated-register -fvisibility-inlines-hidden -fvisibility=hidden -mmacosx-version-min=10.7 -stdlib=libc++ -DNDEBUG -O3 -mavx -I/opt/local/include
+// #cgo LDFLAGS: -lembree -L/opt/local/lib
 // #include "wrapper.hpp"
 import "C"
 import "unsafe"
