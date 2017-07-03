@@ -1,7 +1,7 @@
 package embree
 
-// #cgo CXXFLAGS: -D__forceinline=inline -std=c++11 -O3
-// #cgo LDFLAGS: -lembree
+// #cgo CXXFLAGS: -D__forceinline=inline -std=c++11 -O3 -I/opt/local/include
+// #cgo LDFLAGS: -lembree -L/opt/local/lib
 // #include "wrapper.hpp"
 import "C"
 import "unsafe"
